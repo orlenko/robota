@@ -1,6 +1,6 @@
 from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn
-from .jira import get_my_issues
+
+from robota.repl_jira import evaluate_list
 
 console = Console()
 
@@ -42,31 +42,14 @@ def evaluate(ast):
         "quit": evaluate_quit,
         "q": evaluate_quit,
     }
-    evaluators.get(ast[0], evaluate_unknown)(ast)
+    evaluators.get(ast[0], evaluate_unknown)(console, ast)
 
 
-def evaluate_list(ast):
-    with Progress(
-        SpinnerColumn(),
-        TimeElapsedColumn(),
-        transient=True,
-    ) as progress:
-        task = progress.add_task("Loading issues", total=100)
-        my_issues = get_my_issues()
-        progress.update(task, advance=100)
-    for issue in sorted(
-        my_issues, key=lambda i: int(i.key.split("-")[1]), reverse=True
-    ):
-        console.print(
-            f"[link={issue.permalink()}]{issue.key}[/link]: {issue.fields.summary}"
-        )
-
-
-def evaluate_quit(ast):
+def evaluate_quit(console, ast):
     raise EOFError()
 
 
-def evaluate_unknown(ast):
+def evaluate_unknown(console, ast):
     raise RobotaError(f"Unknown command {ast[0]}")
 
 
@@ -83,11 +66,14 @@ def loop():
             ast = parse(tokens)
             result = evaluate(ast)
             if result is not None:
-                print(result)
+                console.print(result)
         except RobotaError as e:
-            print(e)
+            console.print(e)
+        except EOFError:
+            console.print("Bye!")
+            break
         except Exception as e:
-            print(e)
+            console.print_exception(show_locals=True)
             break
 
 
