@@ -3,7 +3,7 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "python.formatting.provider": "none",
+  "python.formatting.provider": "black",
   "files.autoSave": "onFocusChange",
   "files.insertFinalNewline": true
 }
