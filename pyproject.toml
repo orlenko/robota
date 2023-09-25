@@ -13,6 +13,7 @@ black = "^23.9.1"
 pre-commit = "^3.4.0"
 jira = {extras = ["cli"], version = "^3.5.2"}
 rich = "^13.5.3"
+python-slugify = "^8.0.1"
 
 
 [build-system]

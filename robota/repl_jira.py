@@ -31,6 +31,7 @@ def stories_table(title, stories, console):
 
 
 def evaluate_list(console, ast):
+    """List my JIRA stories"""
     with Progress(
         SpinnerColumn(),
         TimeElapsedColumn(),
@@ -43,9 +44,9 @@ def evaluate_list(console, ast):
 
     current_sprint = [i for i in my_issues if sprint_name(i)]
 
+    stories_table(
+        "\[not in an active sprint]", [i for i in my_issues if not sprint_name(i)], console
+    )
+
     if current_sprint:
         stories_table(sprint_name(current_sprint[0]), current_sprint, console)
-
-    stories_table(
-        "My Other Tickets", [i for i in my_issues if not sprint_name(i)], console
-    )

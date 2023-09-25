@@ -1,4 +1,6 @@
+from collections import defaultdict
 from rich.console import Console
+from robota.repl_git import evaluate_workon
 
 from robota.repl_jira import evaluate_list
 
@@ -36,21 +38,42 @@ def parse(tokens):
 
 
 def evaluate(ast):
-    evaluators = {
-        "list": evaluate_list,
-        "l": evaluate_list,
-        "quit": evaluate_quit,
-        "q": evaluate_quit,
-    }
     evaluators.get(ast[0], evaluate_unknown)(console, ast)
 
 
 def evaluate_quit(console, ast):
+    """Quit the program"""
     raise EOFError()
 
 
 def evaluate_unknown(console, ast):
     raise RobotaError(f"Unknown command {ast[0]}")
+
+
+def evaluate_help(console, ast):
+    """Display this help message"""
+    console.print("Available commands:")
+    grouped_evaluators = defaultdict(list)
+    for name, fn in evaluators.items():
+        grouped_evaluators[fn].append(name)
+    for fn, names in grouped_evaluators.items():
+        console.print(f"  {', '.join(names)}: {evaluators[names[0]].__doc__}")
+
+
+evaluators = {
+    "list": evaluate_list,
+    "l": evaluate_list,
+
+    "workon": evaluate_workon,
+    "w": evaluate_workon,
+
+    "quit": evaluate_quit,
+    "q": evaluate_quit,
+
+    "help": evaluate_help,
+    "h": evaluate_help,
+    "?": evaluate_help,
+}
 
 
 def loop():

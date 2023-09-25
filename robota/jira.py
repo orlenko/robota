@@ -8,3 +8,7 @@ def get_my_issues():
     return jira.search_issues(
         "assignee = currentUser() AND resolution = Unresolved ORDER BY priority DESC, updated DESC"
     )
+
+
+def get_issue(key):
+    return jira.issue(key)
