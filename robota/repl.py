@@ -1,8 +1,9 @@
 from collections import defaultdict
-from rich.console import Console
-from robota.repl_git import evaluate_workon
 
-from robota.repl_jira import evaluate_list
+from rich.console import Console
+
+from .repl_github import evaluate_org, evaluate_prs, evaluate_workon
+from .repl_jira import evaluate_list
 
 console = Console()
 
@@ -61,25 +62,19 @@ def evaluate_help(console, ast):
 
 
 evaluators = {
-    "list": evaluate_list,
     "l": evaluate_list,
-
-    "workon": evaluate_workon,
     "w": evaluate_workon,
-
-    "quit": evaluate_quit,
+    "o": evaluate_org,
+    "p": evaluate_prs,
     "q": evaluate_quit,
-
-    "help": evaluate_help,
     "h": evaluate_help,
-    "?": evaluate_help,
 }
 
 
 def loop():
     while True:
         try:
-            s = console.input("[green]robota> ")
+            s = console.input(f"[green]robota ({'/'.join(evaluators.keys())}) > ")
         except EOFError:
             break
         if not s:
