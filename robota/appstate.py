@@ -8,13 +8,13 @@ if os.path.exists(STATE_FILE):
         state = json.load(f)
 
 
-def set(key, value):
+def set(key: str, value: any):
     state[key] = value
     save()
 
 
-def get(key):
-    return state.get(key)
+def get(key, default=None):
+    return state.get(key, default)
 
 
 def save():
