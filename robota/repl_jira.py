@@ -1,9 +1,10 @@
 from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn
 from rich.table import Table
 
+from robota.progress import with_progress
+
 from . import appstate
 from .jira import get_my_issues
-
 
 status_colors = {"To Do": "grey", "In Progress": "yellow", "In Review": "green"}
 
@@ -30,22 +31,17 @@ def stories_table(title, stories, console):
     console.print(table)
 
 
+@with_progress
 def evaluate_list(console, ast):
     """List my JIRA stories"""
-    with Progress(
-        SpinnerColumn(),
-        TimeElapsedColumn(),
-        transient=True,
-    ) as progress:
-        task = progress.add_task("Loading issues", total=100)
-        my_issues = get_my_issues()
-        progress.update(task, advance=100)
+    my_issues = get_my_issues()
     appstate.set("my_issues", [i.raw for i in my_issues])
-
     current_sprint = [i for i in my_issues if sprint_name(i)]
 
     stories_table(
-        "\[not in an active sprint]", [i for i in my_issues if not sprint_name(i)], console
+        "\[not in an active sprint]",
+        [i for i in my_issues if not sprint_name(i)],
+        console,
     )
 
     if current_sprint:
