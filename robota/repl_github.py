@@ -30,6 +30,10 @@ def ask_user_for_repos():
 
 @with_progress
 def checkout_repos(workdir_path, title, repos):
+    return _checkout_repos(workdir_path, title, repos)
+
+
+def _checkout_repos(workdir_path, title, repos):
     if not repos:
         repos = ask_user_for_repos()
 
@@ -38,7 +42,7 @@ def checkout_repos(workdir_path, title, repos):
     branchname = f"vlad-{jira_story_id}-{slugify(title)}"
 
     for repo in [r for r in repos if r.strip()]:
-        # print(f"Checking out {github_org()}/{repo}")
+        print(f"Checking out {github_org()}/{repo}")
         cmd = (
             f"cd {workdir_path} && "
             f"git clone git@github.com:{github_org()}/{repo}.git && "
@@ -46,7 +50,7 @@ def checkout_repos(workdir_path, title, repos):
             f"git fetch && "
             f'git checkout -B {branchname} $(git rev-parse --verify {branchname} || echo "")'
         )
-        # print("Running", cmd)
+        print("Running", cmd)
         result = subprocess.run(
             cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE
         )
@@ -74,7 +78,7 @@ def evaluate_workon(console, ast):
     workspace_fname = f"{workdir_path}/{proj_slug}-{slugify(jira_story.fields.summary)}.code-workspace"
     if not os.path.exists(workdir_path):
         os.makedirs(workdir_path)
-        checkout_repos(workdir_path, jira_story.fields.summary, ast[2:])
+        _checkout_repos(workdir_path, jira_story.fields.summary, ast[2:])
         with open(workspace_fname, "w") as f:
             json.dump(
                 {
@@ -109,5 +113,8 @@ def evaluate_prs(console, ast):
     table.add_column("PR")
     table.add_column("Summary")
     for pr in prs:
-        table.add_row(f"[link={pr.html_url}]{pr.repository.name}/{pr.number}", f"[link={pr.html_url}]{pr.title}")
+        table.add_row(
+            f"[link={pr.html_url}]{pr.repository.name}/{pr.number}",
+            f"[link={pr.html_url}]{pr.title}",
+        )
     console.print(table)

@@ -1,4 +1,3 @@
-
 import functools
 
 from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn
@@ -12,9 +11,9 @@ def with_progress(fn):
             TimeElapsedColumn(),
             transient=True,
         ) as progress:
-            task = progress.add_task('processing', total=100)
+            task = progress.add_task("processing", total=100)
             try:
-                fn(progress, task)
+                return fn(*args, **kwargs)
             finally:
                 progress.update(task, advance=100)
 
