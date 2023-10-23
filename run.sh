@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python -m robota
+cd $(dirname $0)
+poetry run python -m robota $@
