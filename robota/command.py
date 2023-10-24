@@ -12,6 +12,7 @@ console = Console()
 
 commands = {}
 
+
 def make_command(*args):
     def decorator(func):
         for arg in args:
@@ -22,12 +23,12 @@ def make_command(*args):
             return func(*args, **kwargs)
 
         return wrapper
+
     return decorator
 
 
 def command(*args):
     """Run a shell command"""
-    print("Running command with args:", *args)
     cmd = args[0]
     cmdargs = args[1:]
     default_handler = lambda *a: unknown_command(cmd, *a)
@@ -49,18 +50,27 @@ def unknown_command(*args):
     return 1
 
 
-@make_command('pr', 'PR', 'pull')
+@make_command("pr", "p")
 def make_pr(commit_message=None, ready_for_review=False):
-    """Commit and push current directory, create a draft PR or PR from it, add a Jira comment, and mark the Jira story as "In Progress" or "In Review", depending on arguments."""
+    """Commit and push current directory, create a draft PR or PR from it, add a Jira comment, and mark the Jira story as "In Progress" or "In Review", depending on arguments.
+
+    To make a PR with a custom commit message, use the following:
+    > robota pr "commit message" ready
+
+    To create a draft PR:
+    > robota pr "optional commit message'
+    """
     current_branch = get_current_branch()
-    jira_story_id = current_branch.split("-")[1]
+    jira_story_id = "-".join(current_branch.split("-")[1:3]).upper()
     jira_story = get_issue(jira_story_id)
-    jira_story_title = jira_story.title
+    jira_story_title = jira_story.fields.summary
     commit_header = f"[{jira_story_id}] {jira_story_title}"
-    commit_msg = commit_header
+    push_msg = commit_header
     if commit_message:
-        commit_msg += f"\\n{commit_message}"
-    commit_all_and_push(commit_message)
+        push_msg += f"\\n{commit_message}"
+    print(f"Ready to commit and push with locals", locals())
+    # return
+    commit_all_and_push(push_msg)
     pr_text = f"This PR is related to Jira story: {jira_story.permalink()}"
     pr = create_pull(commit_header, pr_text, not ready_for_review)
     jira_comment = f"PR: {pr.url}"
@@ -69,7 +79,7 @@ def make_pr(commit_message=None, ready_for_review=False):
     set_issue_status(jira_story_id, status)
 
 
-@make_command('help', 'h', '?', '-?', '-h')
+@make_command("help", "h")
 def help():
     """Print this help screen"""
     console.print("Available commands:")

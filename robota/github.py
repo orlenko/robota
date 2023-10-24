@@ -74,12 +74,15 @@ def commit_all_and_push(message):
     """Commit all changes in the current directory and push"""
 
     for command in [
-        ['git', 'add', '.'],
-        ['git', 'commit', '-am', message],
-        ['git', 'push', '-u', 'origin', get_current_branch()]
-        ]:
+        ["git", "add", "."],
+        ["git", "commit", "-am", message],
+        ["git", "push", "-u", "origin", get_current_branch()],
+    ]:
+        print("Running command", command)
         result = subprocess.run(command, capture_output=True, text=True)
         print(result.stdout.strip())
         if result.returncode != 0:
-            cmd_string = ' '.join(command)
-            raise RobotaError(f"Error {result.returncode} while running command: {cmd_string}: {result.stderr.strip()}")
+            cmd_string = " ".join(command)
+            raise RobotaError(
+                f"Error {result.returncode} while running command: {cmd_string}: {result.stderr.strip()}"
+            )
