@@ -1,11 +1,19 @@
+import os
+import shutil
 from collections import defaultdict
 from functools import wraps
 from traceback import print_exc
 
 from rich.console import Console
 
+from .env import CHECKOUT_DIR
 from .errors import RobotaError
-from .github import commit_all_and_push, create_pull, get_current_branch
+from .github import (
+    commit_all_and_push,
+    create_pull,
+    get_current_branch,
+    is_current_directory_clean,
+)
 from .jira import add_comment_to_issue, get_issue, set_issue_status
 
 console = Console()
@@ -35,7 +43,7 @@ def command(*args):
     try:
         return commands.get(cmd, default_handler)(*cmdargs)
     except RobotaError as rerr:
-        print(f"Exiting because of {rerr}")
+        print(f"Exiting for the following reason: {rerr}")
         return 42
     except:
         print("Unexpected error:")
@@ -88,3 +96,26 @@ def help():
         grouped_evaluators[fn].append(name)
     for fn, names in grouped_evaluators.items():
         console.print(f"  {', '.join(names)}: {commands[names[0]].__doc__}")
+
+
+@make_command("done")
+def done(*_args):  # args are ignored
+    """Clean up current directory and remove working files."""
+    if not is_current_directory_clean():
+        raise RobotaError("Cannot clean up directory that has local changes!")
+
+    current_dir = os.getcwd()
+
+    # Define the workspace root
+    workspace_root = CHECKOUT_DIR
+
+    if not current_dir.startswith(workspace_root):
+        raise RobotaError(f"Not a workspace directory: {current_dir}")
+
+    project_dir = current_dir[len(workspace_root) + 1 :].split(os.sep)[0]
+    project_path = os.path.join(workspace_root, project_dir)
+
+    print(
+        f"so far, we have: workspace at {workspace_root}, project {project_dir}, deletable {project_path}"
+    )
+    shutil.rmtree(project_path)
