@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 from github import Github
@@ -86,3 +87,12 @@ def commit_all_and_push(message):
             raise RobotaError(
                 f"Error {result.returncode} while running command: {cmd_string}: {result.stderr.strip()}"
             )
+
+
+def is_current_directory_clean():
+    print(f"current directory: {os.getcwd()}")
+    result = subprocess.run(
+        ["git", "status", "--porcelain"], capture_output=True, text=True
+    )
+    print(f"git status --porcelain returned {result.returncode}: {result.stdout}")
+    return result.returncode == 0
