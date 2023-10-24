@@ -15,7 +15,11 @@
   "cSpell.words": [
     "appstate",
     "branchname",
+    "cmdargs",
+    "rerr",
+    "slugified",
     "workdir",
     "workon"
-  ]
+  ],
+  "workbench.colorTheme": "Kimbie Dark+"
 }
