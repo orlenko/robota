@@ -2,14 +2,12 @@ from collections import defaultdict
 
 from rich.console import Console
 
+from .errors import RobotaError
+
 from .repl_github import evaluate_org, evaluate_prs, evaluate_workon
 from .repl_jira import evaluate_list
 
 console = Console()
-
-
-class RobotaError(Exception):
-    pass
 
 
 def tokenize(s):
