@@ -115,7 +115,4 @@ def done(*_args):  # args are ignored
     project_dir = current_dir[len(workspace_root) + 1 :].split(os.sep)[0]
     project_path = os.path.join(workspace_root, project_dir)
 
-    print(
-        f"so far, we have: workspace at {workspace_root}, project {project_dir}, deletable {project_path}"
-    )
     shutil.rmtree(project_path)

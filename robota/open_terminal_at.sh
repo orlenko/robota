@@ -18,10 +18,11 @@ case "$(uname)" in
     "Darwin")
         # For macOS, using iTerm2
         osascript <<EOF
-tell application "iTerm"
-    create window with default profile
-    tell current session of current window
-        write text "cd $dir && clear"
+tell application "iTerm2"
+    set newWindow to (create window with default profile)
+    tell current session of newWindow
+        write text "echo it works!"
+        write text "cd $dir"
     end tell
 end tell
 EOF
