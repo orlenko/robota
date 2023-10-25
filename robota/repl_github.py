@@ -75,10 +75,13 @@ def evaluate_workon(console, ast):
     # Fetch the story
     jira_story = get_issue(jira_story_id)
 
+    first_repo = ''
+
     workspace_fname = f"{workdir_path}/{proj_slug}-{slugify(jira_story.fields.summary)}.code-workspace"
     if not os.path.exists(workdir_path):
         os.makedirs(workdir_path)
         _checkout_repos(workdir_path, jira_story.fields.summary, ast[2:])
+        first_repo = os.path.join(workdir_path, os.listdir(workdir_path)[0]) # To be used later for terminal
         with open(workspace_fname, "w") as f:
             json.dump(
                 {
@@ -91,6 +94,9 @@ def evaluate_workon(console, ast):
     command = f"code {workspace_fname}"
     console.print(f"Running {command}...")
     subprocess.run(command, shell=True)
+    script_path = os.path.join(os.path.dirname(__file__), 'open_terminal_at.sh')
+    result = subprocess.run([script_path, first_repo], capture_output=True, text=True)
+    result.check_returncode()
 
 
 def evaluate_org(console, ast):
