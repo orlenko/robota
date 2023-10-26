@@ -13,7 +13,7 @@ dir=$(cd "$1"; pwd)
 case "$(uname)" in
     "Linux")
         # For Ubuntu, using Terminator
-        terminator --working-directory="$dir" &>/dev/null
+        terminator --working-directory="$dir" --profile=CurrentProject --geometry=2000x2000+0+0 &>/dev/null
         ;;
     "Darwin")
         # For macOS, using iTerm2

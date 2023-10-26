@@ -79,21 +79,28 @@ def evaluate_workon(console, ast):
     if not os.path.exists(workdir_path):
         os.makedirs(workdir_path)
         _checkout_repos(workdir_path, jira_story.fields.summary, ast[2:])
+        repo_dirs = os.listdir(workdir_path)
         with open(workspace_fname, "w") as f:
             json.dump(
                 {
                     "folders": [
-                        {"path": subfolder} for subfolder in os.listdir(workdir_path)
+                        {"path": subfolder} for subfolder in repo_dirs
                     ],
+                    "settings": {
+                        "workbench.colorTheme": "Tokyo Night",
+                        "typescript.tsdk": "node_modules/typescript/lib",
+                    },
                 },
-                f,
             )
 
-    first_repo = os.path.join(workdir_path, [x for x in os.listdir(workdir_path) if not x.endswith('.code-workspace')][0]) # To be used later for terminal
+    first_repo = os.path.join(
+        workdir_path,
+        [x for x in os.listdir(workdir_path) if not x.endswith(".code-workspace")][0],
+    )  # To be used later for terminal
     command = f"code {workspace_fname}"
     console.print(f"Running {command}...")
     subprocess.run(command, shell=True)
-    script_path = os.path.join(os.path.dirname(__file__), 'open_terminal_at.sh')
+    script_path = os.path.join(os.path.dirname(__file__), "open_terminal_at.sh")
     result = subprocess.run([script_path, first_repo], capture_output=True, text=True)
     result.check_returncode()
 
