@@ -91,6 +91,7 @@ def evaluate_workon(console, ast):
                         "typescript.tsdk": "node_modules/typescript/lib",
                     },
                 },
+                f
             )
 
     first_repo = os.path.join(
