@@ -88,9 +88,14 @@ def evaluate_workon(console, ast):
                 },
                 f,
             )
+
+    first_repo = os.path.join(workdir_path, [x for x in os.listdir(workdir_path) if not x.endswith('.code-workspace')][0]) # To be used later for terminal
     command = f"code {workspace_fname}"
     console.print(f"Running {command}...")
     subprocess.run(command, shell=True)
+    script_path = os.path.join(os.path.dirname(__file__), 'open_terminal_at.sh')
+    result = subprocess.run([script_path, first_repo], capture_output=True, text=True)
+    result.check_returncode()
 
 
 def evaluate_org(console, ast):
