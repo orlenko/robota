@@ -91,8 +91,7 @@ def commit_all_and_push(message):
 
 def is_current_directory_clean():
     print(f"current directory: {os.getcwd()}")
-    result = subprocess.run(
-        ["git", "status", "--porcelain"], capture_output=True, text=True
-    )
-    print(f"git status --porcelain returned {result.returncode}: {result.stdout}")
+    script_path = os.path.join(os.path.dirname(__file__), 'is_clean.sh')
+    result = subprocess.run([script_path], capture_output=True, text=True)
+    print(f"is_clean returned {result.returncode}: {result.stdout}")
     return result.returncode == 0
