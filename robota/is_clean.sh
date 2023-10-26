@@ -6,9 +6,11 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
   exit 1
 fi
 
+# Get the name of the current branch
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
 # Check for unpushed commits
-if git for-each-ref --format '%(upstream:short)' $(git symbolic-ref -q HEAD) | \
-   grep -q '.' && [ "$(git rev-list @{u}..)" ]; then
+if [ "$(git rev-list origin/$current_branch..$current_branch)" ]; then
   echo "There are unpushed commits."
   exit 1
 else
