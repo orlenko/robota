@@ -6,6 +6,9 @@ from traceback import print_exc
 
 from rich.console import Console
 
+from robota.repl_github import evaluate_prs, evaluate_workon
+from robota.repl_jira import evaluate_list
+
 from .env import CHECKOUT_DIR
 from .errors import RobotaError
 from .github import (
@@ -59,7 +62,7 @@ def unknown_command(*args):
 
 
 @make_command("pr", "p")
-def make_pr(commit_message=None, ready_for_review=False):
+def make_pr(commit_message=None, ready_for_review=False, no_jira=False):
     """Commit and push current directory, create a draft PR or PR from it, add a Jira comment, and mark the Jira story as "In Progress" or "In Review", depending on arguments.
 
     To make a PR with a custom commit message, use the following:
@@ -69,22 +72,32 @@ def make_pr(commit_message=None, ready_for_review=False):
     > robota pr "optional commit message'
     """
     current_branch = get_current_branch()
-    jira_story_id = "-".join(current_branch.split("-")[1:3]).upper()
-    jira_story = get_issue(jira_story_id)
-    jira_story_title = jira_story.fields.summary
-    commit_header = f"[{jira_story_id}] {jira_story_title}"
+    if no_jira:
+        if not commit_message:
+            raise RobotaError("Without Jira, commit message is required")
+        commit_header = commit_message
+    else:
+        jira_story_id = "-".join(current_branch.split("-")[1:3]).upper()
+        jira_story = get_issue(jira_story_id)
+        jira_story_title = jira_story.fields.summary
+        commit_header = f"[{jira_story_id}] {jira_story_title}"
     push_msg = commit_header
     if commit_message:
         push_msg += f"\\n{commit_message}"
     print(f"Ready to commit and push with locals", locals())
     # return
     commit_all_and_push(push_msg)
-    pr_text = f"This PR is related to Jira story: {jira_story.permalink()}"
+    pr_text = (
+        no_jira
+        and commit_message
+        or f"This PR is related to Jira story: {jira_story.permalink()}"
+    )
     pr = create_pull(commit_header, pr_text, not ready_for_review)
-    jira_comment = f"PR: {pr.url}"
-    add_comment_to_issue(jira_story_id, jira_comment)
-    status = "In Review" if ready_for_review else "In Progress"
-    set_issue_status(jira_story_id, status)
+    if not no_jira:
+        jira_comment = f"PR: {pr.url}"
+        add_comment_to_issue(jira_story_id, jira_comment)
+        status = "In Review" if ready_for_review else "In Progress"
+        set_issue_status(jira_story_id, status)
 
 
 @make_command("help", "h")
@@ -116,3 +129,23 @@ def done(*_args):  # args are ignored
     project_path = os.path.join(workspace_root, project_dir)
 
     shutil.rmtree(project_path)
+
+
+@make_command("w")
+def workon(*args):
+    """Start working on a specific story, with optional repository"""
+    ast = ["w"]
+    ast.extend(args)
+    return evaluate_workon(console, ast)
+
+
+@make_command("l")
+def list_stories(*_args):
+    """List stories assigned to me"""
+    return evaluate_list(console, [])
+
+
+@make_command("p")
+def list_pulls(*_args):
+    """List my open PRs"""
+    return evaluate_prs(console, [])
