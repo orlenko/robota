@@ -2,14 +2,11 @@ import json
 import os
 import subprocess
 
-from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn
 from rich.prompt import Prompt
 from rich.table import Table
 from slugify import slugify
 
-from .env import CHECKOUT_DIR
-from .env import GITHUB_ORG as DEFAULT_ORG
-from .env import GITHUB_REPOS
+from .env import CHECKOUT_DIR, GITHUB_REPOS, GITHUB_USERNAME
 from .github import get_my_prs, github_org
 from .jira import get_issue
 from .progress import with_progress
@@ -39,7 +36,7 @@ def _checkout_repos(workdir_path, title, repos):
 
     jira_story_id = os.path.basename(workdir_path)
 
-    branchname = f"vlad-{jira_story_id}-{slugify(title)}"
+    branchname = f"{USER_NICKNAME}-{jira_story_id}-{slugify(title)}"
 
     for repo in [r for r in repos if r.strip()]:
         print(f"Checking out {github_org()}/{repo}")
