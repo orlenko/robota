@@ -17,6 +17,8 @@ A typical work on a story will involve the following steps:
 
  (The name `robota` means "work" in Ukrainian. This is also where the word "robot" comes from.)
 
+ To use: `alias robota=/path/to/run.sh`
+
 Example uses:
 
 ## Command mode
