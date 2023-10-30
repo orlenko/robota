@@ -17,7 +17,7 @@ A typical work on a story will involve the following steps:
 
  (The name `robota` means "work" in Ukrainian. This is also where the word "robot" comes from.)
 
- To use: `alias robota=/path/to/run.sh`
+ To use: `alias robota=/path/to/run.sh`. You will need to have python and poetry. Just do `pyenv local 3.11 && poetry install`, this should generally be enough.
 
 Example uses:
 
