@@ -94,7 +94,7 @@ def make_pr(commit_message=None, ready_for_review=False, no_jira=False):
     )
     pr = create_pull(commit_header, pr_text, not ready_for_review)
     if not no_jira:
-        jira_comment = f"PR: {pr.url}"
+        jira_comment = f"PR: {pr.html_url}"
         add_comment_to_issue(jira_story_id, jira_comment)
         status = "In Review" if ready_for_review else "In Progress"
         set_issue_status(jira_story_id, status)
