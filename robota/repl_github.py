@@ -6,7 +6,7 @@ from rich.prompt import Prompt
 from rich.table import Table
 from slugify import slugify
 
-from .env import CHECKOUT_DIR, GITHUB_REPOS, GITHUB_USERNAME
+from .env import CHECKOUT_DIR, GITHUB_REPOS, USER_NICKNAME
 from .github import get_my_prs, github_org
 from .jira import get_issue
 from .progress import with_progress
