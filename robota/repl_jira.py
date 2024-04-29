@@ -46,7 +46,8 @@ def sprint_table(stories, console):
         status_groups[issue.fields.status.name].append(issue)
 
     # Add rows to the table, ordered by status and key
-    for status in ["To Do", "In Progress", "In Review", "Done"]:
+    known_statuses = ["To Do", "In Progress", "In Review", "Done"]
+    for status in known_statuses:
         if status in status_groups:
             for issue in sorted(
                 status_groups[status], key=lambda i: int(i.key.split("-")[1])
@@ -59,6 +60,17 @@ def sprint_table(stories, console):
                     f"[{color}]{issue.fields.summary}",
                     f"[{color}]{issue.fields.project.key} / {sprint_name(issue)}",
                 )
+    for issue in sorted(stories, key=lambda i: int(i.key.split("-")[1])):
+        if issue.fields.status.name in known_statuses:
+            continue
+        status = issue.fields.status.name
+        table.add_row(
+            f"[link={issue.permalink()}]{issue.key}",
+            f"{status}",
+            f"{issue.fields.assignee.displayName if issue.fields.assignee else 'Unassigned'}",
+            f"{issue.fields.summary}",
+            f"{issue.fields.project.key} / {sprint_name(issue)}",
+        )
 
     console.print(table)
 
