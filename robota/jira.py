@@ -21,3 +21,7 @@ def add_comment_to_issue(issue, comment_text):
 
 def set_issue_status(issue, status):
     return jira.transition_issue(issue, status)
+
+
+def get_current_sprint_issues():
+    return jira.search_issues("sprint in openSprints()")

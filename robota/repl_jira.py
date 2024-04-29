@@ -1,10 +1,11 @@
+from collections import defaultdict
 from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn
 from rich.table import Table
 
 from robota.progress import with_progress
 
 from . import appstate
-from .jira import get_my_issues
+from .jira import get_current_sprint_issues, get_my_issues
 
 status_colors = {"To Do": "grey", "In Progress": "yellow", "In Review": "green"}
 
@@ -31,6 +32,37 @@ def stories_table(title, stories, console):
     console.print(table)
 
 
+def sprint_table(stories, console):
+    table = Table(title="Current Sprint")
+    table.add_column("Key")
+    table.add_column("Status")
+    table.add_column("Owner")
+    table.add_column("Summary")
+    table.add_column("Project / Sprint")
+
+    # Group stories by status
+    status_groups = defaultdict(list)
+    for issue in stories:
+        status_groups[issue.fields.status.name].append(issue)
+
+    # Add rows to the table, ordered by status and key
+    for status in ["To Do", "In Progress", "In Review", "Done"]:
+        if status in status_groups:
+            for issue in sorted(
+                status_groups[status], key=lambda i: int(i.key.split("-")[1])
+            ):
+                color = status_colors.get(status, "white")
+                table.add_row(
+                    f"[{color}][link={issue.permalink()}]{issue.key}",
+                    f"[{color}]{status}",
+                    f"[{color}]{issue.fields.assignee.displayName if issue.fields.assignee else 'Unassigned'}",
+                    f"[{color}]{issue.fields.summary}",
+                    f"[{color}]{issue.fields.project.key} / {sprint_name(issue)}",
+                )
+
+    console.print(table)
+
+
 @with_progress
 def evaluate_list(console, ast):
     """List my JIRA stories"""
@@ -46,3 +78,10 @@ def evaluate_list(console, ast):
 
     if current_sprint:
         stories_table(sprint_name(current_sprint[0]), current_sprint, console)
+
+
+@with_progress
+def evaluate_sprint(console, ast):
+    """Show the current sprint from Jira"""
+    issues = get_current_sprint_issues()
+    sprint_table(issues, console)

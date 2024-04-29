@@ -6,7 +6,7 @@ from .repl import loop
 
 # print(f"env for dir is ROBOTA_CODE_DIR: {os.getenv('ROBOTA_CODE_DIR')}, and argv is {sys.argv}")
 
-if len(sys.argv) == 1 or (len(sys.argv) == 2 and sys.argv[1] == "bash"):
+if len(sys.argv) == 1 or (len(sys.argv) == 2 and sys.argv[1] == "repl"):
     loop()
     sys.exit(0)
 

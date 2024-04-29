@@ -7,7 +7,7 @@ from traceback import print_exc
 from rich.console import Console
 
 from robota.repl_github import evaluate_prs, evaluate_workon
-from robota.repl_jira import evaluate_list
+from robota.repl_jira import evaluate_list, evaluate_sprint
 
 from .env import CHECKOUT_DIR
 from .errors import RobotaError
@@ -63,7 +63,7 @@ def unknown_command(*args):
 
 @make_command("pr", "p")
 def make_pr(commit_message=None, ready_for_review=False, no_jira=False):
-    """Commit and push current directory, create a draft PR or PR from it, add a Jira comment, and mark the Jira story as "In Progress" or "In Review", depending on arguments.
+    """Commit and push current directory, create a PR from it, add a Jira comment, and mark the Jira story as "In Progress" or "In Review", depending on arguments.
 
     To make a PR with a custom commit message, use the following:
     > robota pr "commit message" ready
@@ -133,7 +133,7 @@ def done(*_args):  # args are ignored
 
 @make_command("w")
 def workon(*args):
-    """Start working on a specific story, with optional repository"""
+    """Start working on a specific Jira story, with optional repository"""
     ast = ["w"]
     ast.extend(args)
     return evaluate_workon(console, ast)
@@ -141,11 +141,17 @@ def workon(*args):
 
 @make_command("l")
 def list_stories(*_args):
-    """List stories assigned to me"""
+    """List Jira stories assigned to me"""
     return evaluate_list(console, [])
 
 
 @make_command("p")
 def list_pulls(*_args):
-    """List my open PRs"""
+    """List my open PRs on GitHub"""
     return evaluate_prs(console, [])
+
+
+@make_command("s")
+def show_sprint():
+    """Show the current sprint from Jira"""
+    return evaluate_sprint(console, [])
