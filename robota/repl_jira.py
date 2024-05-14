@@ -3,7 +3,6 @@ from rich.table import Table
 
 from robota.progress import with_progress
 
-from . import appstate
 from .jira import (
     get_boards,
     get_my_issues,
@@ -90,7 +89,6 @@ def sprint_table(stories, console):
 def evaluate_list(console, ast):
     """List my JIRA stories"""
     my_issues = get_my_issues()
-    appstate.set("my_issues", [i.raw for i in my_issues])
     current_sprint = [i for i in my_issues if sprint_name(i)]
 
     stories_table(
