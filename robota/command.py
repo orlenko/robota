@@ -7,7 +7,14 @@ from traceback import print_exc
 from rich.console import Console
 
 from robota.repl_github import evaluate_prs, evaluate_workon
-from robota.repl_jira import evaluate_list, evaluate_sprint
+from robota.repl_jira import (
+    evaluate_boards,
+    evaluate_list,
+    evaluate_projects,
+    evaluate_sprint_issues,
+    evaluate_sprints,
+    evaluate_unestimated,
+)
 
 from .env import CHECKOUT_DIR
 from .errors import RobotaError
@@ -151,7 +158,31 @@ def list_pulls(*_args):
     return evaluate_prs(console, [])
 
 
-@make_command("s")
-def show_sprint():
-    """Show the current sprint from Jira"""
-    return evaluate_sprint(console, [])
+@make_command("projects")
+def list_projects():
+    """List the projects from Jira"""
+    return evaluate_projects(console, [])
+
+
+@make_command("boards")
+def list_boards():
+    """List the boards from Jira"""
+    return evaluate_boards(console, [])
+
+
+@make_command("sprints")
+def list_sprints(*args):
+    """List the sprints for a board"""
+    return evaluate_sprints(console, args)
+
+
+@make_command("sprint-issues")
+def list_sprint_issues(*args):
+    """List the issues for a sprint"""
+    return evaluate_sprint_issues(console, args)
+
+
+@make_command("unestimated")
+def list_unestimated(*args):
+    """List the unestimated issues for a board"""
+    return evaluate_unestimated(console, args)
