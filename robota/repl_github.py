@@ -6,7 +6,7 @@ from rich.prompt import Prompt
 from rich.table import Table
 from slugify import slugify
 
-from .env import CHECKOUT_DIR, GITHUB_REPOS, USER_NICKNAME
+from .env import CHECKOUT_DIR, GITHUB_REPOS, IDE_COMMAND, USER_NICKNAME
 from .github import get_my_prs, github_org
 from .jira import get_issue
 from .progress import with_progress
@@ -80,22 +80,20 @@ def evaluate_workon(console, ast):
         with open(workspace_fname, "w") as f:
             json.dump(
                 {
-                    "folders": [
-                        {"path": subfolder} for subfolder in repo_dirs
-                    ],
+                    "folders": [{"path": subfolder} for subfolder in repo_dirs],
                     "settings": {
                         "workbench.colorTheme": "Tokyo Night",
                         "typescript.tsdk": "node_modules/typescript/lib",
                     },
                 },
-                f
+                f,
             )
 
     first_repo = os.path.join(
         workdir_path,
         [x for x in os.listdir(workdir_path) if not x.endswith(".code-workspace")][0],
     )  # To be used later for terminal
-    command = f"code {workspace_fname}"
+    command = f"{IDE_COMMAND or 'code'} {workspace_fname}"
     console.print(f"Running {command}...")
     subprocess.run(command, shell=True)
     script_path = os.path.join(os.path.dirname(__file__), "open_terminal_at.sh")

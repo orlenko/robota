@@ -21,5 +21,8 @@
     "workdir",
     "workon"
   ],
-  "workbench.colorTheme": "Kimbie Dark+"
+  "workbench.colorTheme": "Kimbie Dark+",
+  "python.analysis.extraPaths": [
+    "robota"
+  ]
 }
