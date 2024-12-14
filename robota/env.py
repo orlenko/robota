@@ -16,3 +16,4 @@ CHECKOUT_DIR = os.getenv("CHECKOUT_DIR")
 
 
 USER_NICKNAME = os.getenv("USER_NICKNAME")
+IDE_COMMAND = os.getenv("IDE_COMMAND")
