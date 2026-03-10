@@ -9,7 +9,7 @@ readme = "README.md"
 python = "^3.11"
 ipython = "^8.15.0"
 python-dotenv = "^1.0.0"
-black = "^23.9.1"
+black = "^24.3.0"
 pre-commit = "^3.4.0"
 jira = {extras = ["cli"], version = "^3.5.2"}
 rich = "^13.5.3"
